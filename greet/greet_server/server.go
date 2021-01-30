@@ -4,8 +4,13 @@ import (
 	"log"
 	"net"
 
+	"github.com/zemags/gRPSstudy/greet/greetpb"
+
 	"google.golang.org/grpc"
 )
+
+type server struct {
+}
 
 func main() {
 	// write listener
@@ -15,4 +20,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
+
+	greetpb.RegisterGreetServiceServer(s, &server{})
+
 }
