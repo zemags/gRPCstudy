@@ -2,6 +2,6 @@ syntax = "proto3";
 
 package greet;
 
-option go_package = "greetpb";
+option go_package = ".;greetpb";
 
-message GreetService{}
+service GreetService{}

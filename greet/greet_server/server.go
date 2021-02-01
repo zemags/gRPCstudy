@@ -16,7 +16,7 @@ func main() {
 	// write listener
 	lis, err := net.Listen("tcp", "0.0.0.0:50051") // 50051 default port for grpc
 	if err != nil {
-		log.Fatalf("Failed to listen", err)
+		log.Fatalln("Failed to listen", err)
 	}
 
 	s := grpc.NewServer()
@@ -24,7 +24,7 @@ func main() {
 	greetpb.RegisterGreetServiceServer(s, &server{})
 
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve", err)
+		log.Fatalln("failed to serve", err)
 	}
 
 }
