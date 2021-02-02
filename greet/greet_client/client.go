@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/zemags/gRPSstudy/greet/greetpb"
@@ -20,8 +21,35 @@ func main() {
 
 	// create client
 	c := greetpb.NewGreetServiceClient(con)
-	doUnary(c)
+	// doUnary(c)
 
+	doServerStreaming(c)
+
+}
+
+func doServerStreaming(c greetpb.GreetServiceClient) {
+	fmt.Println("Run server streaming with client")
+	request := &greetpb.GreetManyTimesRequest{
+		Greeting: &greetpb.Greeting{
+			FirstName: "John",
+			LastName:  "dor",
+		},
+	}
+	streamResult, err := c.GreetManyTimes(context.Background(), request)
+	if err != nil {
+		log.Fatalln("Error while calling rpc GreetManyTimes", err)
+	}
+	for {
+		msg, err := streamResult.Recv()
+		if err == io.EOF {
+			// reached the end of the stream
+			break
+		}
+		if err != nil {
+			log.Fatalln("Error while reading stream", err)
+		}
+		fmt.Println("Response from GreetManyTimes", msg.GetResult())
+	}
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
@@ -34,7 +62,7 @@ func doUnary(c greetpb.GreetServiceClient) {
 	}
 	response, err := c.Greet(context.Background(), request)
 	if err != nil {
-		log.Fatalf("Error while Greep RPC", err)
+		log.Fatalln("Error while Greep RPC", err)
 	}
-	log.Fatalf("Response from Greet", response.Result)
+	log.Fatalln("Response from Greet", response.Result)
 }
