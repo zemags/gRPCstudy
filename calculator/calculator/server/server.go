@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -10,21 +9,6 @@ import (
 
 	"google.golang.org/grpc"
 )
-
-type Service struct {
-	pb.UnimplementedCalculatorServer
-}
-
-func (*Service) Calc(ctx context.Context, req *pb.CalculatorRequest) (*pb.CalculatorResponse, error) {
-	values := req.GetValues()
-	firstValue := values.FirstValue
-	secondValue := values.SecondValue
-
-	response := &pb.CalculatorResponse{
-		Sum: firstValue + secondValue,
-	}
-	return response, nil
-}
 
 func main() {
 	fmt.Println("Calculator ready.")
@@ -36,12 +20,11 @@ func main() {
 	}
 
 	server := grpc.NewServer()
+	pb.RegisterCalculatorServer(server, NewService())
 
-	pb.RegisterCalculatorServer(server, new(Service))
 	log.Printf("Running server on %s", lis.Addr().String())
 
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("Failed to server listener %v", err)
 	}
-
 }
