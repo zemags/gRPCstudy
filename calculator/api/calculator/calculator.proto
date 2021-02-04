@@ -29,6 +29,10 @@ message ResponseDouble {
     double average = 1;
 }
 
+message ResponseMaximum {
+    int32 maximum = 1;
+}
+
 service Calculator {
     // Implement calculator unary
     rpc Calc(CalculatorRequest) returns (CalculatorResponse) {
@@ -40,5 +44,9 @@ service Calculator {
 
     // Calculator client streaming
     rpc Average(stream StreamRequest) returns (ResponseDouble) {
+    }
+
+    // Calculator bi-directional streaming
+    rpc Maximum(stream StreamRequest) returns (stream ResponseMaximum) {
     }
 }

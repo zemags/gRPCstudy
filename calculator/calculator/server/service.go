@@ -19,6 +19,34 @@ func NewService() *Service {
 	return &Service{}
 }
 
+// Maximum get stream of integers and send back maximum
+func (*Service) Maximum(stream pb.Calculator_MaximumServer) error {
+	fmt.Println("Run find maximum streaming")
+	var currentValue int32 = 0
+
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			log.Fatalf("Error while reading client stream %v", err)
+			return err
+		}
+
+		if req.PositiveInteger > currentValue {
+			currentValue = req.PositiveInteger
+			msg := &pb.ResponseMaximum{
+				Maximum: currentValue,
+			}
+			if err := stream.Send(msg); err != nil {
+				log.Fatalf("Error while sending to client stream %v", err)
+				return err
+			}
+		}
+	}
+}
+
 // Average get integers from client and send back average
 func (*Service) Average(stream pb.Calculator_AverageServer) error {
 	fmt.Println("Run average streaming")

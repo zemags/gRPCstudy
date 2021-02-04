@@ -9,11 +9,43 @@ import (
 	"github.com/zemags/gRPSstudy/calculator/calculator/pb"
 )
 
+func biDirectionalStreaming(c pb.CalculatorClient) {
+	fmt.Println("Run bidi client streaming with server")
+
+	stream, err := c.Maximum(context.Background())
+	if err != nil {
+		log.Fatalf("Error while calling Maximum rpc %v", err)
+		return
+	}
+
+	sliceOfInts := []int32{1, 5, 3, 6, 2, 20}
+	// send messages to server
+	for _, i := range sliceOfInts {
+		request := &pb.StreamRequest{
+			PositiveInteger: i,
+		}
+		stream.Send(request)
+	}
+	stream.CloseSend()
+
+	// receive messages from server
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error while receiving %v", err)
+		}
+		fmt.Println("Received ", res.GetMaximum())
+	}
+}
+
 func clientStreaming(c pb.CalculatorClient) {
 	fmt.Println("Run client streaming with server")
 	stream, err := c.Average(context.Background())
 	if err != nil {
-		log.Fatalf("Error while calling Average %v", err)
+		log.Fatalf("Error while calling Average rpc %v", err)
 	}
 	for i := 1; i < 5; i++ {
 		request := &pb.StreamRequest{
@@ -23,7 +55,7 @@ func clientStreaming(c pb.CalculatorClient) {
 	}
 	response, err := stream.CloseAndRecv()
 	if err != nil {
-		log.Fatalf("Error while receivinf response %v", err)
+		log.Fatalf("Error while receiving response %v", err)
 	}
 	fmt.Printf("Average: %v\n", response)
 }
@@ -35,7 +67,7 @@ func serverStreaming(c pb.CalculatorClient) {
 	}
 	streamResult, err := c.Decomposition(context.Background(), request)
 	if err != nil {
-		log.Fatalf("error while callig rpc Decomposition %v", err)
+		log.Fatalf("error while callig Decomposition rpc %v", err)
 	}
 	for {
 		msg, err := streamResult.Recv()

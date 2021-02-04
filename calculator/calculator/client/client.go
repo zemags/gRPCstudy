@@ -17,5 +17,6 @@ func main() {
 	client := pb.NewCalculatorClient(conn)
 	// getRequest(client)
 	// serverStreaming(client)
-	clientStreaming(client)
+	// clientStreaming(client)
+	biDirectionalStreaming(client)
 }
