@@ -22,13 +22,56 @@ func main() {
 	// create client
 	c := greetpb.NewGreetServiceClient(con)
 	// doUnary(c)
-
 	// doServerStreaming(c)
-	doClientStreamin(c)
+	// doClientStreaming(c)
+	doBiDirectionalStreaming(c)
 
 }
 
-func doClientStreamin(c greetpb.GreetServiceClient) {
+func doBiDirectionalStreaming(c greetpb.GreetServiceClient) {
+	fmt.Println("Client bidi stream")
+
+	stream, err := c.GreetEvery(context.Background())
+	if err != nil {
+		log.Fatalln("Error while calling GreetEvery", err)
+		return
+	}
+
+	waitChan := make(chan struct{})
+	// send bunch of msg async
+	go func() {
+		for i := 0; i < 5; i++ {
+			request := &greetpb.GreetEveryRequest{
+				Greeting: &greetpb.Greeting{
+					FirstName: fmt.Sprintf("John %d", i),
+				},
+			}
+			stream.Send(request)
+		}
+		stream.CloseSend()
+	}()
+
+	// receive a bunch of msg
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				// end of the stream close channel
+				break
+			}
+			if err != nil {
+				log.Fatalln("Error while receiving", err)
+			}
+			fmt.Println("Received ", res.GetResult())
+		}
+		close(waitChan)
+	}()
+
+	// block until everything is done
+	<-waitChan
+}
+
+func doClientStreaming(c greetpb.GreetServiceClient) {
 	request := []*greetpb.LongGreetRequest{
 		&greetpb.LongGreetRequest{
 			Greeting: &greetpb.Greeting{
