@@ -17,12 +17,16 @@ message CalculatorResponse {
     int32 sum = 1;
 }
 
-message StreamRequest{
+message StreamRequest {
     int32 positive_integer = 1;
 }
 
 message StreamResponse {
     int32 factor = 1;
+}
+
+message ResponseDouble {
+    double average = 1;
 }
 
 service Calculator {
@@ -32,5 +36,9 @@ service Calculator {
 
     // Calculator server streaming
     rpc Decomposition(StreamRequest) returns (stream StreamResponse) {
+    }
+
+    // Calculator client streaming
+    rpc Average(stream StreamRequest) returns (ResponseDouble) {
     }
 }
