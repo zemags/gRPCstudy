@@ -18,5 +18,6 @@ func main() {
 	// getRequest(client)
 	// serverStreaming(client)
 	// clientStreaming(client)
-	biDirectionalStreaming(client)
+	// biDirectionalStreaming(client)
+	errorUnary(client)
 }

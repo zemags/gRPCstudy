@@ -7,7 +7,31 @@ import (
 	"log"
 
 	"github.com/zemags/gRPSstudy/calculator/calculator/pb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
+
+func errorUnary(c pb.CalculatorClient) {
+	fmt.Println("Run SquareRoot rpc")
+
+	res, err := c.SquareRoot(context.Background(), &pb.SquareRootRequest{Number: int32(-2)})
+	if err != nil {
+		respErr, ok := status.FromError(err)
+		if ok {
+			// actual err from gRPC (user error)
+			fmt.Printf("Error message from server: %v\n", respErr.Message())
+			fmt.Println(respErr.Code()) // InvalidNumber
+			if respErr.Code() == codes.InvalidArgument {
+				fmt.Println("Negative number send")
+				return
+			}
+		} else {
+			log.Fatalf("Bog error calling SquareRoot %v", err)
+			return
+		}
+	}
+	fmt.Printf("Result %v", res.GetNumberRoot())
+}
 
 func biDirectionalStreaming(c pb.CalculatorClient) {
 	fmt.Println("Run bidi client streaming with server")

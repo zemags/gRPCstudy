@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 
 	"github.com/zemags/gRPSstudy/calculator/calculator/pb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Service implement empty service with backward compatibility
@@ -17,6 +20,23 @@ type Service struct {
 // NewService make new empty Service
 func NewService() *Service {
 	return &Service{}
+}
+
+//
+func (*Service) SquareRoot(ctx context.Context, req *pb.SquareRootRequest) (*pb.SquareRootResponse, error) {
+	fmt.Println("Received SquareRoot RPC")
+	number := req.GetNumber()
+	if number < 0 {
+		return nil, status.Errorf(
+			// make own error. return nil as result and error
+			codes.InvalidArgument,
+			fmt.Sprintf("Received a negative number %v", number),
+		)
+	}
+	// if all good return result and nil error
+	return &pb.SquareRootResponse{
+		NumberRoot: math.Sqrt(float64(number)),
+	}, nil
 }
 
 // Maximum get stream of integers and send back maximum
