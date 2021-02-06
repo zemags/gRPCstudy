@@ -20,7 +20,7 @@ func errorUnary(c pb.CalculatorClient) {
 		if ok {
 			// actual err from gRPC (user error)
 			fmt.Printf("Error message from server: %v\n", respErr.Message())
-			fmt.Println(respErr.Code()) // InvalidNumber
+			fmt.Println(respErr.Code()) // InvalidArgument
 			if respErr.Code() == codes.InvalidArgument {
 				fmt.Println("Negative number send")
 				return
