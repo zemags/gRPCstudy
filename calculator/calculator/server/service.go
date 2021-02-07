@@ -22,7 +22,7 @@ func NewService() *Service {
 	return &Service{}
 }
 
-//
+// SquareRoot implement grpc error
 func (*Service) SquareRoot(ctx context.Context, req *pb.SquareRootRequest) (*pb.SquareRootResponse, error) {
 	fmt.Println("Received SquareRoot RPC")
 	number := req.GetNumber()

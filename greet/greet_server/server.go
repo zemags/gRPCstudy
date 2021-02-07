@@ -11,6 +11,8 @@ import (
 	"github.com/zemags/gRPSstudy/greet/greetpb"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type server struct {
@@ -80,6 +82,25 @@ func (*server) GreetEvery(stream greetpb.GreetService_GreetEveryServer) error {
 			return err
 		}
 	}
+}
+
+func (*server) GreetDeadline(ctx context.Context, req *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
+	fmt.Println("GreetDeadline function was invoked", req)
+	for i := 0; i < 3; i++ {
+		if ctx.Err() == context.Canceled {
+			// the client canceled the request
+			fmt.Println("The client cancel the request")
+			return nil, status.Error(codes.Canceled, "the client cacnceleed the request!")
+		}
+		time.Sleep(1 * time.Second)
+	}
+
+	firstName := req.GetGreeting().GetFirstName()
+	result := fmt.Sprintf("Hello %s", firstName)
+	response := &greetpb.GreetResponse{
+		Result: result,
+	}
+	return response, nil
 }
 
 func main() {

@@ -497,7 +497,7 @@ var file_greet_greetpb_greet_proto_rawDesc = []byte{
 	0x67, 0x72, 0x65, 0x65, 0x74, 0x69, 0x6e, 0x67, 0x22, 0x2c, 0x0a, 0x12, 0x47, 0x72, 0x65, 0x65,
 	0x74, 0x45, 0x76, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16,
 	0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
-	0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x32, 0xa4, 0x02, 0x0a, 0x0c, 0x47, 0x72, 0x65, 0x65, 0x74,
+	0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x32, 0xe2, 0x02, 0x0a, 0x0c, 0x47, 0x72, 0x65, 0x65, 0x74,
 	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x34, 0x0a, 0x05, 0x47, 0x72, 0x65, 0x65, 0x74,
 	0x12, 0x13, 0x2e, 0x67, 0x72, 0x65, 0x65, 0x74, 0x2e, 0x47, 0x72, 0x65, 0x65, 0x74, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x67, 0x72, 0x65, 0x65, 0x74, 0x2e, 0x47, 0x72,
@@ -515,9 +515,12 @@ var file_greet_greetpb_greet_proto_rawDesc = []byte{
 	0x72, 0x79, 0x12, 0x18, 0x2e, 0x67, 0x72, 0x65, 0x65, 0x74, 0x2e, 0x47, 0x72, 0x65, 0x65, 0x74,
 	0x45, 0x76, 0x65, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x67,
 	0x72, 0x65, 0x65, 0x74, 0x2e, 0x47, 0x72, 0x65, 0x65, 0x74, 0x45, 0x76, 0x65, 0x72, 0x79, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x0b, 0x5a,
-	0x09, 0x2e, 0x3b, 0x67, 0x72, 0x65, 0x65, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x12, 0x3c, 0x0a,
+	0x0d, 0x47, 0x72, 0x65, 0x65, 0x74, 0x44, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x12, 0x13,
+	0x2e, 0x67, 0x72, 0x65, 0x65, 0x74, 0x2e, 0x47, 0x72, 0x65, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x67, 0x72, 0x65, 0x65, 0x74, 0x2e, 0x47, 0x72, 0x65, 0x65,
+	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x0b, 0x5a, 0x09, 0x2e,
+	0x3b, 0x67, 0x72, 0x65, 0x65, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -553,12 +556,14 @@ var file_greet_greetpb_greet_proto_depIdxs = []int32{
 	3, // 5: greet.GreetService.GreetManyTimes:input_type -> greet.GreetManyTimesRequest
 	5, // 6: greet.GreetService.LongGreet:input_type -> greet.LongGreetRequest
 	7, // 7: greet.GreetService.GreetEvery:input_type -> greet.GreetEveryRequest
-	2, // 8: greet.GreetService.Greet:output_type -> greet.GreetResponse
-	4, // 9: greet.GreetService.GreetManyTimes:output_type -> greet.GreetManyTimesResponse
-	6, // 10: greet.GreetService.LongGreet:output_type -> greet.LongGreetResponse
-	8, // 11: greet.GreetService.GreetEvery:output_type -> greet.GreetEveryResponse
-	8, // [8:12] is the sub-list for method output_type
-	4, // [4:8] is the sub-list for method input_type
+	1, // 8: greet.GreetService.GreetDeadline:input_type -> greet.GreetRequest
+	2, // 9: greet.GreetService.Greet:output_type -> greet.GreetResponse
+	4, // 10: greet.GreetService.GreetManyTimes:output_type -> greet.GreetManyTimesResponse
+	6, // 11: greet.GreetService.LongGreet:output_type -> greet.LongGreetResponse
+	8, // 12: greet.GreetService.GreetEvery:output_type -> greet.GreetEveryResponse
+	2, // 13: greet.GreetService.GreetDeadline:output_type -> greet.GreetResponse
+	9, // [9:14] is the sub-list for method output_type
+	4, // [4:9] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name
@@ -719,6 +724,8 @@ type GreetServiceClient interface {
 	LongGreet(ctx context.Context, opts ...grpc.CallOption) (GreetService_LongGreetClient, error)
 	// Bi-directional streaming
 	GreetEvery(ctx context.Context, opts ...grpc.CallOption) (GreetService_GreetEveryClient, error)
+	// Unary deadline api
+	GreetDeadline(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (*GreetResponse, error)
 }
 
 type greetServiceClient struct {
@@ -835,6 +842,15 @@ func (x *greetServiceGreetEveryClient) Recv() (*GreetEveryResponse, error) {
 	return m, nil
 }
 
+func (c *greetServiceClient) GreetDeadline(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (*GreetResponse, error) {
+	out := new(GreetResponse)
+	err := c.cc.Invoke(ctx, "/greet.GreetService/GreetDeadline", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GreetServiceServer is the server API for GreetService service.
 type GreetServiceServer interface {
 	// Unary api
@@ -845,6 +861,8 @@ type GreetServiceServer interface {
 	LongGreet(GreetService_LongGreetServer) error
 	// Bi-directional streaming
 	GreetEvery(GreetService_GreetEveryServer) error
+	// Unary deadline api
+	GreetDeadline(context.Context, *GreetRequest) (*GreetResponse, error)
 }
 
 // UnimplementedGreetServiceServer can be embedded to have forward compatible implementations.
@@ -862,6 +880,9 @@ func (*UnimplementedGreetServiceServer) LongGreet(GreetService_LongGreetServer) 
 }
 func (*UnimplementedGreetServiceServer) GreetEvery(GreetService_GreetEveryServer) error {
 	return status.Errorf(codes.Unimplemented, "method GreetEvery not implemented")
+}
+func (*UnimplementedGreetServiceServer) GreetDeadline(context.Context, *GreetRequest) (*GreetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GreetDeadline not implemented")
 }
 
 func RegisterGreetServiceServer(s *grpc.Server, srv GreetServiceServer) {
@@ -959,6 +980,24 @@ func (x *greetServiceGreetEveryServer) Recv() (*GreetEveryRequest, error) {
 	return m, nil
 }
 
+func _GreetService_GreetDeadline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GreetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreetServiceServer).GreetDeadline(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/greet.GreetService/GreetDeadline",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreetServiceServer).GreetDeadline(ctx, req.(*GreetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _GreetService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "greet.GreetService",
 	HandlerType: (*GreetServiceServer)(nil),
@@ -966,6 +1005,10 @@ var _GreetService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Greet",
 			Handler:    _GreetService_Greet_Handler,
+		},
+		{
+			MethodName: "GreetDeadline",
+			Handler:    _GreetService_GreetDeadline_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
