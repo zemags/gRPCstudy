@@ -1,0 +1,1 @@
+<img src="/pic/ssl_encryption.jpg" alt="ssl_encryption"/>
