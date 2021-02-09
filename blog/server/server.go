@@ -10,20 +10,12 @@ import (
 	"time"
 
 	"github.com/zemags/gRPSstudy/blog/pb"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 )
 
 var collection *mongo.Collection
-
-type blogItem struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	AuthorID string             `bson:"author_id"`
-	Title    string             `bson:"title"`
-	Content  string             `bson:"content"`
-}
 
 func main() {
 	// if code crashed get filename and line number of code
