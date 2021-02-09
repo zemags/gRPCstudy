@@ -7,6 +7,8 @@ import (
 
 	"github.com/zemags/gRPSstudy/calculator/calculator/pb"
 
+	"google.golang.org/grpc/reflection"
+
 	"google.golang.org/grpc"
 )
 
@@ -21,6 +23,9 @@ func main() {
 
 	server := grpc.NewServer()
 	pb.RegisterCalculatorServer(server, NewService())
+
+	// Register reflection service on gRPC server.
+	reflection.Register(server)
 
 	log.Printf("Running server on %s", lis.Addr().String())
 
