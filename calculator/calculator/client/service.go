@@ -116,5 +116,5 @@ func getRequest(client pb.CalculatorClient) {
 	if err != nil {
 		log.Fatalf("Error while Cacl RPC %v", err)
 	}
-	log.Fatalf("Answer responce %v", response.Sum)
+	log.Fatalf("Answer response %v", response.Sum)
 }
