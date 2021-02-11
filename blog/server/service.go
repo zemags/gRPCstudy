@@ -18,6 +18,7 @@ import (
 // Service implement empty service with backward compatibility
 type Service struct {
 	pb.UnimplementedBlogServiceServer
+	Mongo *Mongo
 }
 
 type blogItem struct {
@@ -39,9 +40,11 @@ type MongoParams struct {
 	Collection string
 }
 
-// NewService make new empty Service
-func NewService() *Service {
-	return &Service{}
+// NewService make new Service
+func NewService(m *Mongo) *Service {
+	return &Service{
+		Mongo: m,
+	}
 }
 
 func createMongoClient(mongoURL string) (*driver.Client, error) {
@@ -51,14 +54,20 @@ func createMongoClient(mongoURL string) (*driver.Client, error) {
 		return nil, errors.New("no url for Mongo client")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	client, err := driver.Connect(ctx, options.Client().ApplyURI(mongoURL))
 	if err != nil {
-		log.Fatalf("Cannot connect to %v", err)
+		log.Fatalf("Cannot initialize connection %v", err)
 		return nil, errors.New("cannot connect to MongoDB")
 	}
+
+	if err := client.Ping(ctx, nil); err != nil {
+		log.Fatalf("Cannot connect %v", err)
+		return nil, errors.New("cannot connect to MongoDB")
+	}
+
 	return client, nil
 }
 
@@ -70,15 +79,9 @@ func createMongoServer(client *driver.Client, mp MongoParams) *Mongo {
 	}
 }
 
-// GetCollection impliment collection and return error
-func (m *Mongo) getMongoCollection() *driver.Collection {
-	log.Printf("Create mongo collection %v for db %v", m.Collection, m.DBName)
-	coll := m.Database(m.DBName).Collection(m.Collection)
-	return coll
-}
-
 // CreateBlog insert value for blog to db
-func (m *Mongo) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*pb.CreateBlogResponse, error) {
+func (s *Service) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*pb.CreateBlogResponse, error) {
+	fmt.Println("CreateBlog service")
 	blog := req.GetBlog()
 
 	data := blogItem{
@@ -87,7 +90,7 @@ func (m *Mongo) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*pb.
 		Content:  blog.GetContent(),
 	}
 
-	coll := m.Database(m.DBName).Collection(m.Collection)
+	coll := s.Mongo.Database(s.Mongo.DBName).Collection(s.Mongo.Collection)
 	res, err := coll.InsertOne(context.Background(), data)
 	if err != nil {
 		return nil, status.Errorf(

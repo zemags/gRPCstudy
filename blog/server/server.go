@@ -19,10 +19,12 @@ type ServerOpts struct {
 	MongoURL string
 }
 
+// var coll *mongo.Collection
+
 func main() {
 	// if code crashed get filename and line number of code
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	fmt.Println("Starting BlogService")
+	fmt.Println("Starting BlogService server")
 
 	servOpts := &ServerOpts{
 		IPPort:   "localhost:50051",
@@ -34,19 +36,19 @@ func main() {
 		log.Fatal(err)
 	}
 	defer client.Disconnect(context.Background())
-	mongoParams := MongoParams{
-		DBName:     "mydb",
-		Collection: "blog",
-	}
-	createMongoServer(client, mongoParams)
+
+	mgParams := MongoParams{DBName: "mydb", Collection: "blog"}
+	mg := createMongoServer(client, mgParams)
+	service := NewService(mg)
 
 	lsn, lsnErr := net.Listen("tcp", servOpts.IPPort)
 	if err != nil {
 		log.Fatalf("Failed to listen %v", lsnErr)
 	}
+
 	opts := []grpc.ServerOption{}
 	server := grpc.NewServer(opts...)
-	pb.RegisterBlogServiceServer(server, NewService())
+	pb.RegisterBlogServiceServer(server, service)
 
 	log.Printf("Running server on %s", lsn.Addr().String())
 
