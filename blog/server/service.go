@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/zemags/gRPSstudy/blog/pb"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	driver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -81,7 +82,7 @@ func createMongoServer(client *driver.Client, mp MongoParams) *Mongo {
 
 // CreateBlog insert value for blog to db
 func (s *Service) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*pb.CreateBlogResponse, error) {
-	fmt.Println("CreateBlog service")
+	fmt.Println("CreateBlog rpc service")
 	blog := req.GetBlog()
 
 	data := blogItem{
@@ -116,4 +117,38 @@ func (s *Service) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*p
 		},
 	}, nil
 
+}
+
+// ReadBlog return blog id exist else NOT_FOUND
+func (s *Service) ReadBlog(ctx context.Context, req *pb.ReadBlogRequest) (*pb.ReadBlogResponse, error) {
+	fmt.Println("ReadBlog rpc service")
+
+	blogID := req.GetBlogId()
+	objID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		log.Fatalf("Cannot create objectId from hex string %v", err)
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Cannot parse ID"),
+		)
+	}
+
+	data := &blogItem{}
+	coll := s.Mongo.Database(s.Mongo.DBName).Collection(s.Mongo.Collection)
+	filter := bson.M{"_id": objID}
+	res := coll.FindOne(ctx, filter)
+	if err := res.Decode(data); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, // grpc not found error
+			fmt.Sprintf("Cannot find blog with specified ID %v", err),
+		)
+	} // pass value from res to data
+	return &pb.ReadBlogResponse{
+		Blog: &pb.Blog{
+			Id:       data.AuthorID,
+			AuthorId: data.AuthorID,
+			Content:  data.Content,
+			Title:    data.Title,
+		},
+	}, nil
 }

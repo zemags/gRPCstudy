@@ -31,5 +31,4 @@ func main() {
 		log.Fatalf("Cannot create blog %v", err)
 	}
 	fmt.Printf("Blog was created %v", res)
-
 }
