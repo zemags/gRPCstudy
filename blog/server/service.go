@@ -126,7 +126,7 @@ func (s *Service) ReadBlog(ctx context.Context, req *pb.ReadBlogRequest) (*pb.Re
 	blogID := req.GetBlogId()
 	objID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		log.Fatalf("Cannot create objectId from hex string %v", err)
+		// log.Fatalf("Cannot create objectId from hex string %v", err)
 		return nil, status.Errorf(
 			codes.InvalidArgument,
 			fmt.Sprintf("Cannot parse ID"),

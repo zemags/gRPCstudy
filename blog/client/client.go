@@ -26,9 +26,25 @@ func main() {
 		Content:  "First of all, you need...",
 	}
 
-	res, err := c.CreateBlog(context.Background(), &pb.CreateBlogRequest{Blog: blog})
+	createReq, err := c.CreateBlog(context.Background(), &pb.CreateBlogRequest{Blog: blog})
 	if err != nil {
 		log.Fatalf("Cannot create blog %v", err)
 	}
-	fmt.Printf("Blog was created %v", res)
+	fmt.Printf("Blog was created %v", createReq)
+
+	blogId := createReq.GetBlog().GetId()
+	// read blog
+	fmt.Println("Read blog client")
+	_, errRead := c.ReadBlog(context.Background(), &pb.ReadBlogRequest{BlogId: "1232aa"}) // error check
+	if errRead != nil {
+		fmt.Printf("Cannot read blog: %v \n", errRead)
+	}
+
+	readReq, errRead := c.ReadBlog(context.Background(), &pb.ReadBlogRequest{BlogId: blogId})
+	if errRead != nil {
+		// log.Fatalf("Cannot read blog %v", errRead)
+		fmt.Printf("Cannot read blog: %v \n", errRead)
+	}
+	fmt.Printf("Blog was read %v", readReq)
+
 }
