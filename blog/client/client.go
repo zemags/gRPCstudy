@@ -26,9 +26,9 @@ func main() {
 		Content:  "First of all, you need...",
 	}
 
-	createReq, err := c.CreateBlog(context.Background(), &pb.CreateBlogRequest{Blog: blog})
+	createReq, errCreate := c.CreateBlog(context.Background(), &pb.CreateBlogRequest{Blog: blog})
 	if err != nil {
-		log.Fatalf("Cannot create blog %v", err)
+		log.Fatalf("Cannot create blog %v", errCreate)
 	}
 	fmt.Printf("Blog was created %v", createReq)
 
@@ -47,4 +47,17 @@ func main() {
 	}
 	fmt.Printf("Blog was read %v", readReq)
 
+	// update blog
+	updtBlog := &pb.Blog{
+		Id:       blogId,
+		AuthorId: "John",
+		Title:    "How to build gRPS servece Part 2",
+		Content:  "Second of all, you need...",
+	}
+
+	updtReq, errUpdt := c.UpdateBlog(context.Background(), &pb.UpdateBlogRequest{Blog: updtBlog})
+	if errUpdt != nil {
+		fmt.Printf("Cannot update blog: %v \n", errUpdt)
+	}
+	fmt.Printf("Blog was update %v", updtReq)
 }

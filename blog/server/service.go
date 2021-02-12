@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Service implement empty service with backward compatibility
+// Service implement empty service with backward compatibility and collect all opts
 type Service struct {
 	pb.UnimplementedBlogServiceServer
 	Mongo *Mongo
