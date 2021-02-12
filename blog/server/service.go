@@ -172,3 +172,44 @@ func (s *Service) DeleteBlog(ctx context.Context, req *pb.DeleteBlogRequest) (*p
 	}
 	return &pb.DeleteBlogResponse{BlogId: req.GetBlogId()}, nil
 }
+
+// ListBlog return stream with posts
+func (s *Service) ListBlog(req *pb.ListBlogRequest, stream pb.BlogService_ListBlogServer) error {
+	fmt.Println("ListBlog rpc service")
+
+	coll := s.Mongo.Database(s.Mongo.DBName).Collection(s.Mongo.Collection)
+	cur, err := coll.Find(context.Background(), primitive.D{{}})
+	if err != nil {
+		return status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Internal error %v", err),
+		)
+	}
+	defer cur.Close(context.Background())
+
+	for cur.Next(context.Background()) {
+		data := &blogItem{}
+		err := cur.Decode(data)
+		if err != nil {
+			return status.Errorf(
+				codes.Internal,
+				fmt.Sprintf("Decoding error data from Mongo %v", err),
+			)
+		}
+		stream.Send(&pb.ListBlogResponse{
+			Blog: &pb.Blog{
+				Id:       data.AuthorID,
+				AuthorId: data.AuthorID,
+				Content:  data.Content,
+				Title:    data.Title,
+			},
+		})
+	}
+	if err := cur.Err(); err != nil {
+		return status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Internal error %v", err),
+		)
+	}
+	return nil
+}

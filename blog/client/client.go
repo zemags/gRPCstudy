@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/zemags/gRPSstudy/blog/pb"
@@ -74,4 +75,22 @@ func main() {
 		fmt.Printf("Cannot delete blog: %v \n", errDel)
 	}
 	fmt.Printf("Blog was delete %v", deleteReq)
+
+	// list blog
+	fmt.Println("List blog client")
+	streamResult, err := c.ListBlog(context.Background(), &pb.ListBlogRequest{})
+	if err != nil {
+		log.Fatalf("error while callig ListBlog rpc %v", err)
+	}
+	for {
+		msg, err := streamResult.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Printf("Error while reading stream %v", err)
+		}
+		fmt.Printf("Current blog is: %v\n", msg.GetBlog())
+	}
+
 }
