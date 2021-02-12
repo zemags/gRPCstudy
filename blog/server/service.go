@@ -132,11 +132,11 @@ func (s *Service) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest) (*p
 	data.Title = blog.GetTitle()
 	data.Content = blog.GetContent()
 
-	_, updateErr := coll.ReplaceOne(context.Background(), filter, data)
-	if updateErr != nil {
+	_, errUpdt := coll.ReplaceOne(context.Background(), filter, data)
+	if errUpdt != nil {
 		return nil, status.Errorf(
 			codes.Internal,
-			fmt.Sprintf("Cannot replace blog with specified ID %v", updateErr),
+			fmt.Sprintf("Cannot replace blog with specified ID %v", errUpdt),
 		)
 	}
 	return &pb.UpdateBlogResponse{
@@ -148,4 +148,27 @@ func (s *Service) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest) (*p
 		},
 	}, nil
 
+}
+
+// DeleteBlog remove blog post from Mongo by
+func (s *Service) DeleteBlog(ctx context.Context, req *pb.DeleteBlogRequest) (*pb.DeleteBlogResponse, error) {
+	fmt.Println("DeleteBlog rpc service")
+	objId, err := primitive.ObjectIDFromHex(req.GetBlogId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Cannot parse Id"),
+		)
+	}
+
+	filter := bson.M{"_id": objId}
+	coll := s.Mongo.Database(s.Mongo.DBName).Collection(s.Mongo.Collection)
+	_, errDel := coll.DeleteOne(context.Background(), filter)
+	if errDel != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Cannot delete blog with specified ID %v", errDel),
+		)
+	}
+	return &pb.DeleteBlogResponse{BlogId: req.GetBlogId()}, nil
 }

@@ -22,7 +22,7 @@ func main() {
 
 	blog := &pb.Blog{
 		AuthorId: "John",
-		Title:    "How to build gRPS servece",
+		Title:    "How to build gRPC servece",
 		Content:  "First of all, you need...",
 	}
 
@@ -48,10 +48,11 @@ func main() {
 	fmt.Printf("Blog was read %v", readReq)
 
 	// update blog
+	fmt.Println("Update blog client")
 	updtBlog := &pb.Blog{
 		Id:       blogId,
 		AuthorId: "John",
-		Title:    "How to build gRPS servece Part 2",
+		Title:    "How to build gRPC servece Part 2",
 		Content:  "Second of all, you need...",
 	}
 
@@ -60,4 +61,17 @@ func main() {
 		fmt.Printf("Cannot update blog: %v \n", errUpdt)
 	}
 	fmt.Printf("Blog was update %v", updtReq)
+
+	// delete blog
+	fmt.Println("Delete blog client")
+	_, errDel := c.DeleteBlog(context.Background(), &pb.DeleteBlogRequest{BlogId: "1232aa"}) // error check
+	if errDel != nil {
+		fmt.Printf("Cannot delete blog: %v \n", errDel)
+	}
+
+	deleteReq, errDel := c.DeleteBlog(context.Background(), &pb.DeleteBlogRequest{BlogId: blogId})
+	if errDel != nil {
+		fmt.Printf("Cannot delete blog: %v \n", errDel)
+	}
+	fmt.Printf("Blog was delete %v", deleteReq)
 }
