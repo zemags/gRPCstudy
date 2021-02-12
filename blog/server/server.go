@@ -19,8 +19,6 @@ type ServerOpts struct {
 	MongoURL string
 }
 
-// var coll *mongo.Collection
-
 func main() {
 	// if code crashed get filename and line number of code
 	log.SetFlags(log.LstdFlags | log.Lshortfile)

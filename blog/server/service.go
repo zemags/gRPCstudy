@@ -2,16 +2,12 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"log"
-	"time"
 
 	"github.com/zemags/gRPSstudy/blog/pb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	driver "go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	positive "go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -23,60 +19,16 @@ type Service struct {
 }
 
 type blogItem struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"` // autoincrement
-	AuthorID string             `bson:"author_id"`
-	Title    string             `bson:"title"`
-	Content  string             `bson:"content"`
-}
-
-// Mongo collect all options to work with mongo
-type Mongo struct {
-	*driver.Client
-	MongoParams
-}
-
-// MongoParams collection given dbname and collection
-type MongoParams struct {
-	DBName     string
-	Collection string
+	ID       positive.ObjectID `bson:"_id,omitempty"`
+	AuthorID string            `bson:"author_id"`
+	Title    string            `bson:"title"`
+	Content  string            `bson:"content"`
 }
 
 // NewService make new Service
 func NewService(m *Mongo) *Service {
 	return &Service{
 		Mongo: m,
-	}
-}
-
-func createMongoClient(mongoURL string) (*driver.Client, error) {
-	log.Printf("Create mongo client for %s", mongoURL)
-	if mongoURL == "" {
-		log.Fatalf("Cannot create client for Mongo db, no URL")
-		return nil, errors.New("no url for Mongo client")
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-
-	client, err := driver.Connect(ctx, options.Client().ApplyURI(mongoURL))
-	if err != nil {
-		log.Fatalf("Cannot initialize connection %v", err)
-		return nil, errors.New("cannot connect to MongoDB")
-	}
-
-	if err := client.Ping(ctx, nil); err != nil {
-		log.Fatalf("Cannot connect %v", err)
-		return nil, errors.New("cannot connect to MongoDB")
-	}
-
-	return client, nil
-}
-
-func createMongoServer(client *driver.Client, mp MongoParams) *Mongo {
-	log.Printf("Create new mongo server")
-	return &Mongo{
-		Client:      client,
-		MongoParams: mp,
 	}
 }
 
@@ -99,7 +51,7 @@ func (s *Service) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*p
 			fmt.Sprintf("Internal Error %v", err),
 		)
 	}
-	objID, ok := res.InsertedID.(primitive.ObjectID)
+	objId, ok := res.InsertedID.(primitive.ObjectID)
 
 	if !ok {
 		return nil, status.Errorf(
@@ -110,7 +62,7 @@ func (s *Service) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*p
 
 	return &pb.CreateBlogResponse{
 		Blog: &pb.Blog{
-			Id:       objID.Hex(),
+			Id:       objId.Hex(),
 			AuthorId: blog.GetAuthorId(),
 			Title:    blog.GetTitle(),
 			Content:  blog.GetContent(),
@@ -123,19 +75,18 @@ func (s *Service) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*p
 func (s *Service) ReadBlog(ctx context.Context, req *pb.ReadBlogRequest) (*pb.ReadBlogResponse, error) {
 	fmt.Println("ReadBlog rpc service")
 
-	blogID := req.GetBlogId()
-	objID, err := primitive.ObjectIDFromHex(blogID)
+	blogId := req.GetBlogId()
+	objId, err := primitive.ObjectIDFromHex(blogId)
 	if err != nil {
-		// log.Fatalf("Cannot create objectId from hex string %v", err)
 		return nil, status.Errorf(
 			codes.InvalidArgument,
-			fmt.Sprintf("Cannot parse ID"),
+			fmt.Sprintf("Cannot parse Id"),
 		)
 	}
 
 	data := &blogItem{}
 	coll := s.Mongo.Database(s.Mongo.DBName).Collection(s.Mongo.Collection)
-	filter := bson.M{"_id": objID}
+	filter := bson.M{"_id": objId}
 	res := coll.FindOne(ctx, filter)
 	if err := res.Decode(data); err != nil {
 		return nil, status.Errorf(
@@ -151,4 +102,50 @@ func (s *Service) ReadBlog(ctx context.Context, req *pb.ReadBlogRequest) (*pb.Re
 			Title:    data.Title,
 		},
 	}, nil
+}
+
+// UpdateBlog update blog poset by getting blog id
+func (s *Service) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest) (*pb.UpdateBlogResponse, error) {
+	fmt.Println("UpdateBlog rpc server")
+
+	blog := req.GetBlog()
+	objId, err := primitive.ObjectIDFromHex(blog.GetId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Cannot parse Id"),
+		)
+	}
+
+	data := &blogItem{}
+	filter := bson.M{"_id": objId}
+	coll := s.Mongo.Database(s.Mongo.DBName).Collection(s.Mongo.Collection)
+	res := coll.FindOne(ctx, filter)
+	if err := res.Decode(data); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, // grpc not found error
+			fmt.Sprintf("Cannot find blog with specified ID %v", err),
+		)
+	} // pass value from res to data
+
+	data.AuthorID = blog.GetAuthorId()
+	data.Title = blog.GetTitle()
+	data.Content = blog.GetContent()
+
+	_, updateErr := coll.ReplaceOne(context.Background(), filter, data)
+	if updateErr != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Cannot replace blog with specified ID %v", updateErr),
+		)
+	}
+	return &pb.UpdateBlogResponse{
+		Blog: &pb.Blog{
+			Id:       data.AuthorID,
+			AuthorId: data.AuthorID,
+			Content:  data.Content,
+			Title:    data.Title,
+		},
+	}, nil
+
 }

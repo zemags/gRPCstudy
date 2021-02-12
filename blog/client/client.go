@@ -33,6 +33,7 @@ func main() {
 	fmt.Printf("Blog was created %v", createReq)
 
 	blogId := createReq.GetBlog().GetId()
+
 	// read blog
 	fmt.Println("Read blog client")
 	_, errRead := c.ReadBlog(context.Background(), &pb.ReadBlogRequest{BlogId: "1232aa"}) // error check
@@ -42,7 +43,6 @@ func main() {
 
 	readReq, errRead := c.ReadBlog(context.Background(), &pb.ReadBlogRequest{BlogId: blogId})
 	if errRead != nil {
-		// log.Fatalf("Cannot read blog %v", errRead)
 		fmt.Printf("Cannot read blog: %v \n", errRead)
 	}
 	fmt.Printf("Blog was read %v", readReq)
