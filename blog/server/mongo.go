@@ -22,7 +22,8 @@ type MongoParams struct {
 	Collection string
 }
 
-func createMongoClient(mongoURL string) (*driver.Client, error) {
+// CreateMongoClient connect to Mongo DB and return client
+func CreateMongoClient(mongoURL string) (*driver.Client, error) {
 	log.Printf("Create mongo client for %s", mongoURL)
 	if mongoURL == "" {
 		log.Fatalf("Cannot create client for Mongo db, no URL")
@@ -46,7 +47,8 @@ func createMongoClient(mongoURL string) (*driver.Client, error) {
 	return client, nil
 }
 
-func createMongoServer(client *driver.Client, mp MongoParams) *Mongo {
+// CreateMongoServer create Mongo struct with implemented client and options
+func CreateMongoServer(client *driver.Client, mp MongoParams) *Mongo {
 	log.Printf("Create new mongo server")
 	return &Mongo{
 		Client:      client,

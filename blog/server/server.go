@@ -29,14 +29,14 @@ func main() {
 		MongoURL: "mongodb://localhost:27017",
 	}
 
-	client, err := createMongoClient(servOpts.MongoURL)
+	client, err := CreateMongoClient(servOpts.MongoURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer client.Disconnect(context.Background())
 
 	mgParams := MongoParams{DBName: "mydb", Collection: "blog"}
-	mg := createMongoServer(client, mgParams)
+	mg := CreateMongoServer(client, mgParams)
 	service := NewService(mg)
 
 	lsn, lsnErr := net.Listen("tcp", servOpts.IPPort)
